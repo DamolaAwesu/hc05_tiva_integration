@@ -13,6 +13,12 @@ uint32_t distance;
 const double clock = 62.5e-9;
 const uint32_t factor = 5882;
 char x;
+
+struct __FILE { int handle;};
+FILE __stdin 	= {0};
+FILE __stdout = {1};
+FILE __stderr = {2};
+
 //__attribute__((naked)) void assert_failed (char const *file, int line) {
     /* TBD: damage control */
 //    NVIC_SystemReset(); /* reset the system */
@@ -121,11 +127,8 @@ void SysTick_Handler(void) {
 }
 
 void ADC0SS3_Handler(void) {
-	//printString("Resistance Value: ");
 	printBTString("Resistance Value: ");
 	value = (ADC0->SSFIFO3)*100/4096;															//map value of ADC result on a scale of 0 - 100
-	//printChar(value);
-	//printString("\n\r");
 	printf("Resistance value: %d\r\n", value);
 	printBTInt(value);
 	printBTString("\n\r");
@@ -241,7 +244,7 @@ uint32_t measureDistance(void) {
 }
 
 void delay_us(uint32_t delay) {
-	//Create a µsecond timer
+	//Create a Âµsecond timer
 	TIMER2->CTL &= ~(1 << 0);
 	TIMER2->CFG |= MODE_32BIT;
 	TIMER2->TAMR |= 0x02;
@@ -294,11 +297,6 @@ void TIMER0A_Handler(void) {
 	ultrasonic();
 	TIMER0->ICR |= (1 << 0);																			//acknowledge Timer0A interrupt
 }
-
-struct __FILE { int handle;};
-FILE __stdin 	= {0};
-FILE __stdout = {1};
-FILE __stderr = {2};
 
 int fgetc(FILE *f) {
 	int c;
