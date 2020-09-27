@@ -12,8 +12,12 @@ File Description: Contains the main() function for the project
 int main() {
 	
 	setupPeripherals();
+	LCD_Init();
 	
-	printf("Test Setup");
+	LCD_4BitCommand(CLR_SCR);
+	LCD_4BitCommand(LCD_ON);
+	
+	printf("Test Setup\r\n");
 	
 	while(1);
 	

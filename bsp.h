@@ -20,7 +20,7 @@ File Description: Header File containing mqcros and function prototypes used in 
 #define MAX_DISTANCE	0xF
 
 /*RCGC Macros*/
-#define GPIO_CFG			(1 << 0)|(1 << 1)|(1 << 3)|(1 << 4)|(1 << 5)
+#define GPIO_CFG			(1 << 0)|(1 << 1)|(1 << 2)|(1 << 3)|(1 << 4)|(1 << 5)
 #define TIMER_CFG			(1 << 0)|(1 << 2)
 #define ADC_CFG				(1 << 0)
 #define UART_CFG			(1 << 0)|(1 << 2)
@@ -61,14 +61,16 @@ File Description: Header File containing mqcros and function prototypes used in 
 #define CLR_SCR				0x01
 #define CURS_HOME			0x02
 #define CURSOR_SHIFT	0x06
+#define SCROLL				0x18
 #define SPACE_BAR			0x14
-#define LCD_ON				0x0F
+#define LCD_ON				0x0C
 #define LINE_1				0x80
 #define LINE_2				0xC0
 #define MODE_8BIT			0x38
+#define MODE_4BIT			0x28
 
 /*ADC Macros*/
-#define ADC_IN				(1U << 0)
+#define ADC_IN				(1U << 3)
 #define SS3						(1U << 3)
 #define ADC_TRIGGER		(0x5 << 12)
 #define ADC_CTL				(1U << 1) | (1U << 2)
@@ -103,10 +105,7 @@ void ultrasonic(void);
 
 /*LCD Control Functions*/
 void LCD_Init(void);
-void LCD_8BitCommand(unsigned char command);
-void LCD_8BitData(unsigned char data);
 void displayString(char *string);
-void setCursor(uint8_t line, uint8_t column);
 void LCD_4BitTransfer(unsigned char data, unsigned char reg_select);
 void LCD_4BitCommand(unsigned char command);
 void LCD_4BitData(unsigned char data);

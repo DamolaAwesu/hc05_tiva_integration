@@ -13,12 +13,6 @@ uint32_t distance;
 const double clock = 62.5e-9;
 const uint32_t factor = 5882;
 char x;
-
-struct __FILE { int handle;};
-FILE __stdin 	= {0};
-FILE __stdout = {1};
-FILE __stderr = {2};
-
 //__attribute__((naked)) void assert_failed (char const *file, int line) {
     /* TBD: damage control */
 //    NVIC_SystemReset(); /* reset the system */
@@ -51,10 +45,10 @@ void setupPeripherals(void) {
 	GPIOD->PCTL = UART2_PTCL;																				//select UART function for PD6 & PD7
 	GPIOD->DEN |= UART2_TX_RX;
 	
-	/*Set up PD5 as analog input */
-	GPIOD->AFSEL |= ADC_IN;   																			//enable alternate function for PD5
-	GPIOD->DEN &= ~ADC_IN;																					//disable digital function
-	GPIOD->AMSEL |= ADC_IN;
+	/*Set up PE3 as analog input */
+	GPIOE->AFSEL &= ~ADC_IN;   																			//disable alternate function for PE3
+	GPIOE->DEN &= ~ADC_IN;																					//disable digital function
+	GPIOE->AMSEL |= ADC_IN;
 	
 	/*Set up the RGB LEDs*/
 	GPIOF->DIR |= LED_RED|LED_BLUE|LED_GREEN;
@@ -81,8 +75,8 @@ void setupPeripherals(void) {
 	ADC0->ACTSS &= ~SS3;  																				//disable Sample Sequencer 3 for configuration
 	ADC0->EMUX &= ~(0xF << 12);
 	ADC0->EMUX |= ADC_TRIGGER;   																	//set SS3 to sample on timer interrupt event
-	ADC0->SSMUX3 = 7;																							//select AIN channel 7 (PD5)
-	ADC0->SSCTL3 |= ADC_CTL;											//configure SS3 for 1 sample and end sampling after sample
+	ADC0->SSMUX3 = 0;																							//select AIN channel 0 (PE3)
+	ADC0->SSCTL3 |= ADC_CTL;																			//configure SS3 for 1 sample and end sampling after sample
 	ADC0->IM |= SS3;																							//configure interrupt
 	ADC0->ACTSS |= SS3;
 	
@@ -127,8 +121,14 @@ void SysTick_Handler(void) {
 }
 
 void ADC0SS3_Handler(void) {
+	printString("Resistance Value: ");
 	printBTString("Resistance Value: ");
-	value = (ADC0->SSFIFO3)*100/4096;															//map value of ADC result on a scale of 0 - 100
+	value = (ADC0->SSFIFO3)*100/4096;														//map value of ADC result on a scale of 0 - 100
+	LCD_4BitCommand(LINE_1);
+	delay_us(1000);
+	displayString("ADC Val: ");
+	//printChar(value);
+	//printString("\n\r");
 	printf("Resistance value: %d\r\n", value);
 	printBTInt(value);
 	printBTString("\n\r");
@@ -194,6 +194,9 @@ void printBTInt(uint8_t c) {
 	//convert integer data to ASCII value and transmit data to the Bluetooth terminal
 	char temp[3];
 	int i = 2;
+	/**/
+	//delay_us(1000);
+	/**/
 	while(i >= 0) {
 		if((c%10)!= 0){
 			temp[i] = ((c % 10)+'0');
@@ -204,6 +207,7 @@ void printBTInt(uint8_t c) {
 		c = c/10;
 		i--;
 	}
+	displayString(temp);
 	printBTString(temp);
 }
 
@@ -244,7 +248,7 @@ uint32_t measureDistance(void) {
 }
 
 void delay_us(uint32_t delay) {
-	//Create a Âµsecond timer
+	//Create a µsecond timer
 	TIMER2->CTL &= ~(1 << 0);
 	TIMER2->CFG |= MODE_32BIT;
 	TIMER2->TAMR |= 0x02;
@@ -280,6 +284,10 @@ void echoTimer(void) {
 void ultrasonic(void){
 	//calculate distance and transmit over bluetooth
 	distance = measureDistance();
+	delay_us(500000);
+	LCD_4BitCommand(LINE_2);
+	delay_us(1000);
+	displayString("Distance: ");
 	printBTString("Distance: ");
 	printBTInt(distance);
 	printBTString("\n\r");
@@ -297,6 +305,11 @@ void TIMER0A_Handler(void) {
 	ultrasonic();
 	TIMER0->ICR |= (1 << 0);																			//acknowledge Timer0A interrupt
 }
+
+struct __FILE { int handle;};
+FILE __stdin 	= {0};
+FILE __stdout = {1};
+FILE __stderr = {2};
 
 int fgetc(FILE *f) {
 	int c;
