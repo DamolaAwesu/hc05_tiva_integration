@@ -8,5 +8,4 @@ The SysTick Timer is also used to toggle the on-board blue LED every half-second
 
 //TO DO
 1. Interface more sensors using SPI and/or I²C protocols
-2. Connect an LCD/TFT screen
-3. Introduce RTOS functionalities and OOP techniques
+2. Introduce RTOS functionalities and OOP techniques
