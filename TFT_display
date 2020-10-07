@@ -1,5 +1,4 @@
- #include <SoftwareSerial.h>
-// Include application, user and local libraries
+#include <SoftwareSerial.h>
 #include "SPI.h"
 #include "TFT_22_ILI9225.h"
 
@@ -17,10 +16,6 @@ TFT_22_ILI9225 tft = TFT_22_ILI9225(TFT_RST, TFT_RS, TFT_CS, TFT_LED, TFT_BRIGHT
 // Variables and constants
 String str = "";
 
-/*
- * Tux black/white image in 180x220 converted using Ardafruit bitmap converter
- * https://github.com/ehubin/Adafruit-GFX-Library/tree/master/Img2Code
- */
 // Setup
 void setup() {
   tft.begin();
@@ -37,8 +32,7 @@ void loop() {
   x=0;
   tft.drawRectangle(0, 0, tft.maxX() - 1, tft.maxY() - 1, COLOR_WHITE);
   tft.setFont(Terminal6x8);
-  String strr = "bonsoir damola cest moi vinay from paris comment allez vous monsieur ";
-  y=tft.drawText(1,y,strr, COLOR_GREEN);
+  
   while(mySerial.available() > 0){
     char c = mySerial.read();
    Serial.print(y);
